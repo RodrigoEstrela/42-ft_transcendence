@@ -12,9 +12,9 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data/
 
-  backend:
+  web:
     build:
-      context: ./backend
+      context: web
       dockerfile: Dockerfile
     environment:
       - DB_NAME=${POSTGRES_DB}
@@ -25,6 +25,6 @@ services:
     ports:
       - ${BACKEND_PORT_LOCAL}:${BACKEND_PORT_DOCKER}
     volumes:
-      - ./backend:/app/backend
+      - ./web:/app/web
     depends_on:
       - db
