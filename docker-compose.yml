@@ -1,21 +1,30 @@
-version: "3.9"
+version: '3.9'
 
 services:
   db:
-    image: postgres
-    volumes:
-      - ./backend/data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-  djbackend:
-    build: ./backend
-    command: python ./backend/manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
+    image: postgres:15.1
     ports:
-      - "8000:8000"
+      - ${POSTGRES_PORT_LOCAL}:${POSTGRES_PORT_DOCKER}
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=${POSTGRES_HOST}
+      - DB_PORT=${POSTGRES_PORT_DOCKER}
+    ports:
+      - ${BACKEND_PORT_LOCAL}:${BACKEND_PORT_DOCKER}
+    volumes:
+      - ./backend:/app/backend
     depends_on:
       - db
-
