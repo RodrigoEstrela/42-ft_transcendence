@@ -12,6 +12,17 @@
 
     <h1>Welcome to the Home Page</h1>
 
+    {% if friend_list %}
+        <h2>Your Friends:</h2>
+        <ul>
+            {% for friend in friend_list.friends.all %}
+                <li>{{ friend.username }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You are not logged in.</p>
+    {% endif %}
+
     <!-- Add your content here -->
 
 </body>

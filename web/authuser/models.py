@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, PermissionsMixin, UserManager
 from django.db import models
 from django.utils import timezone
+from friend.models import FriendList
 
 
 class CustomUserManager(UserManager):
@@ -38,6 +39,8 @@ class User(AbstractUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
+
+    friends_list = models.OneToOneField(FriendList, on_delete=models.CASCADE, null=True, blank=True, related_name="user_friend_list")
 
     objects = CustomUserManager()
 

@@ -39,9 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authuser',
     'pages',
+    'friend'
 ]
 
 AUTH_USER_MODEL = 'authuser.User'
+LOGIN_URL = '/authuser/login/'  # adjust the URL as needed
+LOGIN_REDIRECT_URL = '/home/'   # adjust the URL as needed
+LOGOUT_REDIRECT_URL = '/authuser/login/'  # adjust the URL as needed
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
