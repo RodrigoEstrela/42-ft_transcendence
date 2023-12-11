@@ -34,5 +34,19 @@ def register(request):
 
 
 def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Login successful.')
+                return redirect('home')  # Change 'home' to your desired URL
+            else:
+                messages.error(request, 'Invalid login credentials.')
+    else:
+        form = AuthenticationForm()
 
-    return HttpResponse("Login view")
+    return render(request, 'authuser/login.html', {'form': form})
