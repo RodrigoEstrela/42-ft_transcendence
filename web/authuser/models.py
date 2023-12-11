@@ -30,6 +30,7 @@ class CustomUserManager(UserManager):
 class User(AbstractUser, PermissionsMixin):
     email = models.EmailField(blank=True, default="", unique=True)
     name = models.CharField(max_length=255, blank=True, default="")
+    username = models.CharField(max_length=30, unique=30)
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -42,7 +43,7 @@ class User(AbstractUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         verbose_name = "User"

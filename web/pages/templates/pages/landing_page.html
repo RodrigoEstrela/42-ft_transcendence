@@ -1,0 +1,19 @@
+<!-- pages/templates/pages/landing_page.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+</head>
+<body>
+    <h1>Welcome to our Website!</h1>
+    <p>Thank you for visiting. We're excited to have you here.</p>
+
+    <!-- Button to redirect to the register page -->
+    <a href="{% url 'authuser:register' %}">
+        <button>Register Now</button>
+    </a>
+</body>
+</html>
