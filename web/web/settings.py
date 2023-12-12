@@ -29,18 +29,24 @@ ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
-
 INSTALLED_APPS = [
+    # asgi daphne
+    'daphne',
+    # Default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    # User defined apps
     'authuser',
     'pages',
-    'friend'
+    'friend',
+    'chat',
 ]
+
 
 AUTH_USER_MODEL = 'authuser.User'
 LOGIN_URL = '/authuser/login/'  # adjust the URL as needed
@@ -76,7 +82,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'web.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -133,3 +138,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Daphne
+ASGI_APPLICATION = "web.asgi.application"
