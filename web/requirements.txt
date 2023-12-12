@@ -3,3 +3,4 @@ psycopg2-binary>=2.8
 pillow>=8.2
 channels>=4.0
 daphne>=3.0
+channels-redis>=4.1.0
