@@ -48,6 +48,9 @@ class User(AbstractUser, PermissionsMixin):
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
+    def __str__(self):
+        return self.username
+
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -57,3 +60,4 @@ class User(AbstractUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.name or self.email.split('@')[0]
+
