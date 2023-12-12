@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm
 from friend.models import FriendList
+from django.conf import settings
 
 
 @login_required
@@ -26,7 +27,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("home")
+            return redirect(settings.HOME_URL)
     else:
         form = CustomUserCreationForm()
 
@@ -43,7 +44,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Login successful.')
-                return redirect('home')  # Change 'home' to your desired URL
+                return redirect(settings.HOME_URL)  # Change 'home' to your desired URL
             else:
                 messages.error(request, 'Invalid login credentials.')
     else:

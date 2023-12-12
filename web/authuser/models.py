@@ -29,9 +29,9 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractUser, PermissionsMixin):
-    email = models.EmailField(blank=True, default="", unique=True)
-    name = models.CharField(max_length=255, blank=True, default="")
-    username = models.CharField(max_length=30, unique=30)
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=30, unique=True)
+    tournament_name = models.CharField(max_length=255, blank=True, default="")
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -44,9 +44,9 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.username
@@ -59,5 +59,5 @@ class User(AbstractUser, PermissionsMixin):
         return self.email
 
     def get_short_name(self):
-        return self.name or self.email.split('@')[0]
+        return self.username
 
