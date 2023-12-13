@@ -51,6 +51,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             "message": message,
-            "username": self.scope["user"].username,
+            "username": f"{event['username']}",
             "timestamp": f"{event['timestamp']}"
         }))

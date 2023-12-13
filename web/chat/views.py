@@ -18,4 +18,4 @@ def room(request, room_name):
         room = ChatRoom(name=room_name)
         room.save()
 
-    return render(request, "chat/room.html", {"room_name": room_name, "chats": chats})
+    return render(request, "chat/room.html", {"room_name": room_name, "chats": chats, "sender": request.user.username})

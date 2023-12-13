@@ -7,15 +7,17 @@
 <input id="chat-message-submit" type="button" value="Send">
 {{ room_name|json_script:"room-name" }}
 <script>
-    let message = "";
-    let username = "";
-    let timestamp = "";
+    let message;
+    let username;
+    let day;
+    let hour;
     let formattedMessage;
     {% for chat in chats.all %}
         message = "{{ chat.content|safe }}";
         username = "{{ chat.username|safe }}";
-        timestamp = "{{ chat.timestamp|date:'Y-m-d H:i' }}";
-        formattedMessage = `${timestamp} - ${username}: ${message}`;
+        day = "{{ chat.timestamp|date:'Y-m-d' }}";
+        hour = "{{ chat.timestamp|date:'H:i' }}";
+        formattedMessage = `[${day} ${hour}][${username}]: ${message}`;
         document.querySelector('#chat-log').value += (formattedMessage + '\n');
     {% endfor %}
 </script>
@@ -34,9 +36,9 @@
     chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     const timestamp = new Date(data.timestamp);
-    // Format the timestamp as YYYY-MM-DD HH:mm
-    const formattedTimestamp = `${timestamp.getUTCFullYear()}-${padZero(timestamp.getUTCMonth() + 1)}-${padZero(timestamp.getUTCDate())} ${padZero(timestamp.getUTCHours())}:${padZero(timestamp.getUTCMinutes())}`;
-    const formattedMessage = `${formattedTimestamp} - ${data.username}: ${data.message}`;
+    const day = `${timestamp.getUTCFullYear()}-${padZero(timestamp.getUTCMonth() + 1)}-${padZero(timestamp.getUTCDate())}`
+    const hour = `${padZero(timestamp.getUTCHours())}:${padZero(timestamp.getUTCMinutes())}`;
+    const formattedMessage = `[${day} ${hour}][${data.username}]: ${data.message}`;
     document.querySelector('#chat-log').value += (formattedMessage + '\n');
     };
 
