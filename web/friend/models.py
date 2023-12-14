@@ -61,3 +61,16 @@ class FriendRequest(models.Model):
 
     def delete(self):
         self.delete()
+
+    def requests_info(self, user):
+        friend_requests = FriendRequest.objects.filter(receiver=user, is_active=True)
+        pending_requests_info = [
+            {"sender": request.sender, "receiver": request.receiver, "timestamp": request.timestamp}
+            for request in friend_requests
+        ]
+        friend_requests = FriendRequest.objects.filter(sender=user, is_active=True)
+        pending_requests_info += [
+            {"sender": request.sender, "receiver": request.receiver, "timestamp": request.timestamp}
+            for request in friend_requests
+        ]
+        return pending_requests_info

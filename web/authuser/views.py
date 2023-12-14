@@ -5,20 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm
-from friend.models import FriendList
+from friend.models import FriendList, FriendRequest
 from django.conf import settings
-
-
-@login_required
-def home(request):
-    # Check if the user is authenticated
-    if request.user.is_authenticated:
-        # Get the current user's friend list
-        friend_list = FriendList.objects.get(user=request.user)
-    else:
-        friend_list = None
-
-    return render(request, "authuser/home.html", {"friend_list": friend_list})
+from .models import User
 
 
 def register(request):
@@ -51,3 +40,24 @@ def login_view(request):
         form = AuthenticationForm()
 
     return render(request, 'authuser/login.html', {'form': form})
+
+
+@login_required
+def home(request):
+    return render(request,
+                  "authuser/home.html",
+                  {
+                      "current_user": request.user.get_short_name(),
+                      "friend_list": FriendList.objects.get(user=request.user),
+                      "pending_requests_info": FriendRequest().requests_info(request.user),
+                      "all_users": request.user.get_all_other_users()})
+
+
+@login_required
+def profile(request, username):
+    return render(request,
+                  "authuser/profile.html",
+                  {
+                      "target_user": username,
+                      "info": User.objects.get(username=username).get_profile_page_info()
+                  })

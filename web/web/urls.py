@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include("pages.urls")),
     path('authuser/', include("authuser.urls")),
     path('chat/', include("chat.urls")),
+    path('friend/', include("friend.urls")),
 ]

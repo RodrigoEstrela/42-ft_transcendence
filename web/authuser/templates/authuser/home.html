@@ -10,18 +10,40 @@
 </head>
 <body>
 
-    <h1>Welcome to the Home Page</h1>
+    <h1>Welcome to the Home Page, {{ current_user }}</h1>
 
-    {% if friend_list %}
-        <h2>Your Friends:</h2>
-        <ul>
-            {% for friend in friend_list.friends.all %}
-                <li>{{ friend.username }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>You are not logged in.</p>
-    {% endif %}
+    <h2>Your Friends:</h2>
+    <ul>
+        {% for friend in friend_list.friends.all %}
+            <a href="{%  url 'authuser:profile' username=friend.username %}">
+                <button>{{ friend.username }}</button>
+            <br>
+            </a>
+        {% endfor %}
+    </ul>
+
+    <h2>Pending Friend Requests:</h2>
+    <ul>
+        {% for request_info in pending_requests_info %}
+            {% if request_info.sender.username == current_user %}
+                <li>Request sent to: {{ request_info.receiver.username }} at {{ request_info.timestamp }}</li>
+            {% else %}
+                <li>Request received from: {{ request_info.sender.username }} at {{ request_info.timestamp }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+
+
+    <h2>Users:</h2>
+    <ul>
+        {% for user in all_users.all %}
+            <a href="{% url 'authuser:profile' username=user.username %}">
+                <button>{{ user.username }}</button>
+                <br>
+            </a>
+        {% endfor %}
+    </ul>
 
     <!-- Add your content here -->
 

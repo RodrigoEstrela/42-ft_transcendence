@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PROFILE PAGE</title>
+</head>
+<body>
+    <h1>{{ target_user }}</h1>
+
+    <h2>Info:</h2>
+    <ul>
+        <li>Username: {{ info.username }}</li>
+        <li>Email: {{ info.email }}</li>
+        <li>Tournament Name: {{ info.tournament_name }}</li>
+        <li>Date Joined: {{ info.date_joined }}</li>
+        <li>Last Login: {{ info.last_login }}</li>
+        <li>Status: {{ info.status }}</li>
+    </ul>
+
+    <form method="post" action="{% url 'friend:send_friend_request' username=target_user %}">
+            {% csrf_token %}
+            <button type="submit">Add Friend</button>
+    </form>
+
+</body>
+</html>

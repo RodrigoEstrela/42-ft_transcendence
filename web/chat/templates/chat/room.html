@@ -1,6 +1,23 @@
 <!-- chat/templates/chat/room.html -->
 <!DOCTYPE html>
 <html>
+
+<head>
+    <style>
+        #chat-log {
+            width: 100%;
+            height: 150px;
+            padding: 12px 20px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background-color: #7c7a7a;
+            font-size: 16px;
+            color: #4ed540;
+        }
+    </style>
+</head>
+
 <body>
 <textarea id="chat-log" cols="100" rows="20"></textarea><br>
 <input id="chat-message-input" type="text" size="100"><br>
@@ -34,12 +51,12 @@
     );
 
     chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const timestamp = new Date(data.timestamp);
-    const day = `${timestamp.getUTCFullYear()}-${padZero(timestamp.getUTCMonth() + 1)}-${padZero(timestamp.getUTCDate())}`
-    const hour = `${padZero(timestamp.getUTCHours())}:${padZero(timestamp.getUTCMinutes())}`;
-    const formattedMessage = `[${day} ${hour}][${data.username}]: ${data.message}`;
-    document.querySelector('#chat-log').value += (formattedMessage + '\n');
+        const data = JSON.parse(e.data);
+        const timestamp = new Date(data.timestamp);
+        const day = `${timestamp.getUTCFullYear()}-${padZero(timestamp.getUTCMonth() + 1)}-${padZero(timestamp.getUTCDate())}`
+        const hour = `${padZero(timestamp.getUTCHours())}:${padZero(timestamp.getUTCMinutes())}`;
+        const formattedMessage = `[${day} ${hour}][${data.username}]: ${data.message}`;
+        document.querySelector('#chat-log').value += (formattedMessage + '\n');
     };
 
     function padZero(num) {

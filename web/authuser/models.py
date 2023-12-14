@@ -61,3 +61,15 @@ class User(AbstractUser, PermissionsMixin):
     def get_short_name(self):
         return self.username
 
+    def get_profile_page_info(self):
+        return {
+            "username": self.username,
+            "email": self.email,
+            "tournament_name": self.tournament_name,
+            "date_joined": self.date_joined,
+            "last_login": self.last_login,
+            "status": self.is_active,
+        }
+
+    def get_all_other_users(self):
+        return User.objects.filter(is_staff=False).exclude(username=self.username)
