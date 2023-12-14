@@ -18,4 +18,6 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
             FriendList.objects.create(user=user)
+            user.friends_list = FriendList.objects.get(user=user)
+            user.save()
         return user

@@ -6,7 +6,10 @@
 </head>
 <body>
     <h1>{{ target_user }}</h1>
-
+        <a href="{%  url 'authuser:home' %}">
+            <button>HOME</button>
+            <br>
+        </a>
     <h2>Info:</h2>
     <ul>
         <li>Username: {{ info.username }}</li>
@@ -18,9 +21,12 @@
     </ul>
 
     <form method="post" action="{% url 'friend:send_friend_request' username=target_user %}">
-            {% csrf_token %}
-            <button type="submit">Add Friend</button>
+        {% csrf_token %}
+        <button type="submit">Add Friend</button>
     </form>
-
+    <form method="post" action="{% url 'friend:remove_friend' username=target_user %}">
+        {% csrf_token %}
+        <button type="submit">Remove Friend</button>
+    </form>
 </body>
 </html>

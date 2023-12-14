@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'authuser.User'
 LOGIN_URL = '/authuser/login/'  # adjust the URL as needed
 LOGIN_REDIRECT_URL = 'authuser/home/'   # adjust the URL as needed
+LOGOUT_REDIRECT_URL = 'http://0.0.0.0:8000/authuser/login/'   # adjust the URL as needed
 HOME_URL = 'http://0.0.0.0:8000/authuser/home/'  # adjust the URL as needed
 
 MIDDLEWARE = [

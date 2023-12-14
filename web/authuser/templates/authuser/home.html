@@ -27,8 +27,20 @@
         {% for request_info in pending_requests_info %}
             {% if request_info.sender.username == current_user %}
                 <li>Request sent to: {{ request_info.receiver.username }} at {{ request_info.timestamp }}</li>
+                <form method="post" action="{% url 'friend:cancel_request' username=request_info.receiver.username %}">
+                    {% csrf_token %}
+                    <button type="submit">CANCEL</button>
+                 </form>
             {% else %}
                 <li>Request received from: {{ request_info.sender.username }} at {{ request_info.timestamp }}</li>
+                <form method="post" action="{% url 'friend:accept_request' username=request_info.sender.username %}">
+                    {% csrf_token %}
+                    <button type="submit">ACCEPT</button>
+                 </form>
+                <form method="post" action="{% url 'friend:decline_request' username=request_info.sender.username %}">
+                    {% csrf_token %}
+                    <button type="submit">DECLINE</button>
+                 </form>
             {% endif %}
         {% endfor %}
     </ul>
@@ -44,6 +56,11 @@
             </a>
         {% endfor %}
     </ul>
+
+    <form method="post" action="{% url 'authuser:logout' %}">
+        {% csrf_token %}
+        <button type="submit">LOGOUT</button>
+    </form>
 
     <!-- Add your content here -->
 
