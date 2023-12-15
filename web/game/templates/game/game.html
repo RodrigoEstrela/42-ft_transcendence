@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Game Title</title>
+    <!-- Include any other necessary meta tags, stylesheets, or scripts here -->
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="400" style="background-color: black;"></canvas>
+        <button id="startGame">Start Game</button>
+        <button id="stopGame">Stop Game</button>
+        <!-- ... other HTML elements ... -->
+    </div>
+    <!-- Include the JavaScript code -->
+    {{ room_name|json_script:"room_name" }}
+    <script>
+            const gameId = JSON.parse(document.getElementById('room_name').textContent);
+            // const currentURL = window.location.href;
+            // const urlParts = currentURL.split('/');
+            //
+            // const gameId = urlParts[3];
+            const gameSocket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameId + '/');
+            let canvas = document.getElementById('gameCanvas');
+            let context = canvas.getContext('2d');
+
+            // gameSocket.onmessage = function(gameData) {
+            //     renderGameFrame(gameData);
+            // };
+            gameSocket.onmessage = function(event) {
+                const receivedData = JSON.parse(event.data);
+                renderGameFrame(receivedData);
+            };
+
+            const renderGameFrame = (gameData) => {
+                if (context && canvas) {
+                    clearCanvas();
+                    drawField();
+                    EstamosNaChampions(gameData.score);
+                    drawPaddle(0, gameData.player0, 10, 110);
+                    drawPaddle(1, gameData.player1, 10, 110);
+                    drawBall(gameData.ballX, gameData.ballY, gameData.ballSpeedX ,gameData.ballSpeedY, gameData.ball_speed);
+                }
+            };
+
+            const clearCanvas = () => {
+                if (context && canvas) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            };
+
+            const drawBall = (x, y, speedX, speedY, ballSpeed) => {
+                if (context) {
+
+                    // Display the magnitude of the speed
+                    context.fillStyle = 'white';
+                    context.font = '14pxz Arial';
+                    // context.fillText(`Speed: ${ballSpeed.toFixed(2)}`, 50, 50);
+                    let show_speed = "Speed: " + ballSpeed.toFixed(3);
+                    context.fillText(show_speed, x - 30, y - 30);
+
+
+                    // Draw the main ball
+                    context.fillStyle = 'yellow';
+                    context.beginPath();
+                    context.arc(x, y, 10, 0, Math.PI * 2);
+                    context.fill();
+                    context.closePath();
+
+                    // Draw the trailing circles
+                    const trailCount = 5;  // Adjust the number of circles in the trail
+                    const trailSpacing = 1.5;  // Adjust the spacing between circles in the trail
+
+                    for (let i = 1; i <= trailCount; i++) {
+                        const trailOpacity = 1 - (i / trailCount);
+                        const trailRadius = i * trailSpacing;
+
+                        context.fillStyle = `rgba(255, 255, 0, ${trailOpacity})`;  // Yellow color with variable opacity
+                        context.beginPath();
+                        context.arc(x - speedX * trailRadius, y - speedY * trailRadius, 10, 0, Math.PI * 2);
+                        context.fill();
+                        context.closePath();
+                    }
+                }
+            };
+
+
+            const drawPaddle = (player, y, width, height) => {
+                if (context) {
+                    if (player === 0) {
+                        context.fillStyle = 'red'; // Player 0 Paddle color
+                        context.fillRect(0, y, width, height);
+                    } else {
+                        context.fillStyle = 'blue'; // Player 1 Paddle color
+                        context.fillRect(790, y, width, height);
+                    }
+                }
+            };
+
+            const drawField = () => {
+                if (context) {
+                    context.fillStyle = 'white'
+                    context.fillRect(395, 0, 5, 400);
+                }
+            };
+
+            const EstamosNaChampions = (score) => {
+                if (context) {
+                    context.fillStyle = 'white'
+                    context.fillRect(280, 5, 240, 50);
+                    context.fillRect(360, 40, 60, 30);
+                    context.fillStyle = 'black';
+                    context.font = "20px 'Sports World', sans-serif";
+                    context.fillText("FINAL DA CHAMPIONS", 290, 40);
+                    context.font = "16px 'Sports World', sans-serif";
+                    context.fillText(score, 370, 65);
+                }
+            };
+
+            const handleKeyDown = (event) => {
+                // console.log(event.key)
+                if (event.key === "w") {
+                    // Handle Player 0 UP key press
+                    gameSocket.send("pw");
+                } else if (event.key === "s") {
+                    // Handle Player 0 DOWN key press
+                    gameSocket.send("ps");
+                } else if (event.key === "i") {
+                    // Handle Player 1 UP key press
+                    gameSocket.send("pi");
+                } else if (event.key === "k") {
+                    // Handle Player 1 DOWN key press
+                    gameSocket.send("pk");
+                }
+            };
+
+            const handleKeyUp = (event) => {
+                if (event.key === "w") {
+                    // Handle Player 0 UP key press
+                    gameSocket.send("rw");
+                } else if (event.key === "s") {
+                    // Handle Player 0 DOWN key press
+                    gameSocket.send("rs");
+                } else if (event.key === "i") {
+                    // Handle Player 1 UP key press
+                    gameSocket.send("ri");
+                } else if (event.key === "k") {
+                    // Handle Player 1 DOWN key press
+                    gameSocket.send("rk");
+                }
+            };
+
+            const startGame = () => {
+                // Emit 'startgame' event when the button is clicked
+                if (gameSocket) {
+                    gameSocket.send('stopgame');
+                    // const currentURL = window.location.href;
+                    // const urlParts = currentURL.split('/');
+                    // const gameId = urlParts[urlParts.length - 2] + "/" + urlParts[urlParts.length - 1];
+                    gameSocket.send('startgame');
+                }
+            };
+
+            const stopGame = () => {
+                // Emit 'startgame' event when the button is clicked
+                if (gameSocket) {
+                    gameSocket.send('stopgame');
+                }
+            };
+
+            document.addEventListener("keyup", handleKeyUp);
+            document.addEventListener("keydown", handleKeyDown);
+            const startButton = document.getElementById("startGame");
+            const stopButton = document.getElementById("stopGame");
+            startButton.addEventListener("click", startGame);
+            stopButton.addEventListener("click", stopGame);
+
+
+
+    </script>
+</body>
+<a href="{%  url 'authuser:home' %}">
+            <button>HOME</button>
+            <br>
+</a>
+</html>

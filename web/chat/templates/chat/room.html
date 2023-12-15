@@ -22,7 +22,7 @@
 <textarea id="chat-log" cols="100" rows="20"></textarea><br>
 <input id="chat-message-input" type="text" size="100"><br>
 <input id="chat-message-submit" type="button" value="Send">
-{{ room_name|json_script:"room-name" }}
+{{ room_name|json_script:"room_name" }}
 <script>
     let message;
     let username;
@@ -40,7 +40,7 @@
 </script>
 
 <script>
-    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    const roomName = JSON.parse(document.getElementById('room_name').textContent);
 
     const chatSocket = new WebSocket(
         'ws://'
@@ -86,6 +86,10 @@
 <a href="{%  url 'authuser:home' %}">
     <button>HOME</button>
     <br>
+</a>
+<a href="{%  url 'game:private_room' other_user=target_user %}">
+        <button>GAME</button>
+        <br>
 </a>
 </body>
 <head>

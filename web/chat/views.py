@@ -20,4 +20,6 @@ def private_room(request, other_user):
     return render(request, "chat/room.html", {
         "room_name": room_obj.name,
         "chats": chats,
-        "sender": request.user.username})
+        "sender": request.user.username,
+        "target_user": other_user,
+    })
