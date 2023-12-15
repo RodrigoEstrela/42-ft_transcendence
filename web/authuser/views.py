@@ -58,6 +58,8 @@ def profile(request, username):
     return render(request,
                   "authuser/profile.html",
                   {
+                      "current_user": request.user.get_short_name(),
                       "target_user": username,
-                      "info": User.objects.get(username=username).get_profile_page_info()
+                      "info": User.objects.get(username=username).get_profile_page_info(),
+                      "name_for_room": request.user.username + ":" + username,
                   })

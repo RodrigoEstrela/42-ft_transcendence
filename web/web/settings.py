@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'pages',
     'friend',
     'chat',
+    'game',
 ]
 
 

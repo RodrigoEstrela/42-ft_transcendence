@@ -5,6 +5,7 @@ from channels.db import database_sync_to_async
 from .models import ChatRoom, Chat
 from django.utils import timezone
 
+
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]

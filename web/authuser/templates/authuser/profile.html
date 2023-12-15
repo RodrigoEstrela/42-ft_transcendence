@@ -19,7 +19,6 @@
         <li>Last Login: {{ info.last_login }}</li>
         <li>Status: {{ info.status }}</li>
     </ul>
-
     <form method="post" action="{% url 'friend:send_friend_request' username=target_user %}">
         {% csrf_token %}
         <button type="submit">Add Friend</button>
@@ -28,5 +27,9 @@
         {% csrf_token %}
         <button type="submit">Remove Friend</button>
     </form>
+    <a href="{%  url 'chat:private_room' other_user=target_user %}">
+        <button>CHAT</button>
+        <br>
+    </a>
 </body>
 </html>
