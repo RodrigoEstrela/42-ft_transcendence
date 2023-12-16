@@ -19,6 +19,10 @@
 </head>
 
 <body>
+<a href="{% url 'authuser:profile' username=target_user %}">
+                <button>{{ target_user }}'s profile</button>
+                <br>
+</a>
 <textarea id="chat-log" cols="100" rows="20"></textarea><br>
 <input id="chat-message-input" type="text" size="100"><br>
 <input id="chat-message-submit" type="button" value="Send">
@@ -85,13 +89,14 @@
     };
 </script>
 <a href="{%  url 'authuser:home' %}">
-    <button>HOME</button>
     <br>
+    <button>HOME</button>
 </a>
-<a href="{%  url 'game:private_room' other_user=target_user %}">
+<a href="{%  url 'game:remote_room' other_user=target_user %}">
         <button>GAME</button>
-        <br>
 </a>
+
+
 </body>
 <head>
     <meta charset="utf-8"/>

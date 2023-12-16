@@ -13,7 +13,6 @@
     <h2>Info:</h2>
     <ul>
         <li>Username: {{ info.username }}</li>
-        <li>Email: {{ info.email }}</li>
         <li>Tournament Name: {{ info.tournament_name }}</li>
         <li>Date Joined: {{ info.date_joined }}</li>
         <li>Last Login: {{ info.last_login }}</li>
@@ -31,7 +30,7 @@
         <button>CHAT</button>
         <br>
     </a>
-    <a href="{%  url 'game:private_room' other_user=target_user %}">
+    <a href="{%  url 'game:remote_room' other_user=target_user %}">
         <button>GAME</button>
         <br>
     </a>

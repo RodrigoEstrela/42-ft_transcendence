@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 from friend.models import FriendList, FriendRequest
 from django.conf import settings
 from .models import User
@@ -55,6 +55,13 @@ def home(request):
 
 @login_required
 def profile(request, username):
+    if username == request.user.username:
+        return render(request,
+                      "authuser/self-profile.html",
+                      {
+                          "current_user": request.user.get_short_name(),
+                          "info": User.objects.get(username=username).get_profile_page_info(),
+                      })
     return render(request,
                   "authuser/profile.html",
                   {
@@ -63,3 +70,16 @@ def profile(request, username):
                       "info": User.objects.get(username=username).get_profile_page_info(),
                       "name_for_room": request.user.username + ":" + username,
                   })
+
+
+@login_required
+def edit_profile(request):
+    if request.method == "POST":
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('authuser:profile', username=request.user.username)
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+
+    return render(request, "authuser/edit_profile.html", {"form": form})

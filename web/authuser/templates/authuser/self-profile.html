@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PROFILE PAGE</title>
+</head>
+<body>
+    <h1>{{ current_user }}</h1>
+        <a href="{%  url 'authuser:home' %}">
+            <button>HOME</button>
+            <br>
+        </a>
+    <h2>Info:</h2>
+    <ul>
+        <li>Username: {{ info.username }}</li>
+        <li>Email: {{ info.email }}</li>
+        <li>Tournament Name: {{ info.tournament_name }}</li>
+        <li>Date Joined: {{ info.date_joined }}</li>
+        <li>Last Login: {{ info.last_login }}</li>
+    </ul>
+    <h2>Stats:</h2>
+<a href="{%  url 'authuser:edit_profile' %}">
+    <br>
+    <button>EDIT</button>
+    <br>
+</a>
+</body>
+</html>

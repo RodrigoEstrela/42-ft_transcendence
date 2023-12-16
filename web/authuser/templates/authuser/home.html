@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <h1>Welcome to the Home Page, {{ current_user }}</h1>
+    <h1>Welcome to the Home Page, <a href="{% url 'authuser:profile' username=current_user %}"> {{ current_user }}</a></h1>
 
     <h2>Your Friends:</h2>
     <ul>
@@ -56,6 +56,11 @@
             </a>
         {% endfor %}
     </ul>
+
+    <a href="{%  url 'game:local_room' %}">
+                <button>Local Game</button>
+            <br>
+    </a>
 
     <form method="post" action="{% url 'authuser:logout' %}">
         {% csrf_token %}

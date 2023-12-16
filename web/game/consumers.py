@@ -71,7 +71,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.player0 = 200
         self.player1 = 200
 
-
     playersReady = 0
     ballSize = 5
     ballX = 50
@@ -140,11 +139,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.player1 = self.canvasHeight - self.paddleHeight
 
         await self.update_ball_position()
-
         self.score = str(self.player0Score) + ' : ' + str(self.player1Score)
-
         self.ball_speed = math.sqrt(self.ballSpeedX ** 2 + self.ballSpeedY ** 2)
-
         await self.channel_layer.group_send(
             self.room_group_name, {
                 "type": "game_message",
@@ -159,8 +155,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "ball_speed": self.ball_speed
             }
         )
-
-
 
     async def game_message(self, event):
         # This method is called when the group receives a message
