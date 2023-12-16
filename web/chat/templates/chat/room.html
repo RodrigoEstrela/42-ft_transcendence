@@ -36,6 +36,7 @@
         hour = "{{ chat.timestamp|date:'H:i' }}";
         formattedMessage = `[${day} ${hour}][${username}]: ${message}`;
         document.querySelector('#chat-log').value += (formattedMessage + '\n');
+        document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
     {% endfor %}
 </script>
 
