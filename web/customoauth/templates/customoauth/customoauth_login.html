@@ -1,0 +1,17 @@
+<!-- templates/youroauth_login.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login via 42 OAuth2</title>
+</head>
+<body>
+    <h2>Login via 42 OAuth2</h2>
+    <p>
+        To log in, click the button below to authorize your account:
+    </p>
+    <form method="get" action="{% url 'oauth-login' %}">
+        <button type="submit">Login with 42 OAuth2</button>
+    </form>
+</body>
+</html>

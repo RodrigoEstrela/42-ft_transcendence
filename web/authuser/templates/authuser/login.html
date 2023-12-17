@@ -11,5 +11,8 @@
     {{ form.as_p }}
     <button type="submit">Login</button>
   </form>
+    <form method="get" action="{% url 'oauth-login' %}">
+        <button type="submit">Login with 42 OAuth2</button>
+    </form>
     <p>Don't have an account? <a href="{% url 'authuser:register' %}">Register</a></p>
 {% endblock %}

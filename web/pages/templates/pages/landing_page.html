@@ -19,5 +19,8 @@
     <a href="{% url 'authuser:login' %}">
         <button>Login</button>
     </a>
+    <form method="get" action="{% url 'oauth-login' %}">
+        <button type="submit">Login with 42 OAuth2</button>
+    </form>
 </body>
 </html>

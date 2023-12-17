@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-7l5pcjp0sp&u649az*+7x1see4f4gt=rh%8+cfh=-)%qob$=h-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', "localhost", ]
 
 
 # Application definition
@@ -46,8 +46,20 @@ INSTALLED_APPS = [
     'friend',
     'chat',
     'game',
+    # oauth2
+    'customoauth',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+OAUTH2_PROVIDER_SETTINGS = {
+    'provider_name': 'Custom OAuth2 Provider',
+    'client_id': os.environ.get("CLIENT_ID"),
+    'client_secret': os.environ.get("CLIENT_SECRET"),
+    'authorize_url': "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-f81ae818459e61942c018dc4a81daa38227753acade2e384dfce29a493bb76ba&redirect_uri=http%3A%2F%2F0.0.0.0%3A8000%2Foauth%2Fcallback&response_type=code"
+}
 
 AUTH_USER_MODEL = 'authuser.User'
 LOGIN_URL = '/authuser/login/'  # adjust the URL as needed

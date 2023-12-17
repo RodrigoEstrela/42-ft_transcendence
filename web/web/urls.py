@@ -24,4 +24,5 @@ urlpatterns = [
     path('chat/', include("chat.urls")),
     path('friend/', include("friend.urls")),
     path('game/', include("game.urls")),
+    path('oauth/', include("customoauth.urls")),
 ]
