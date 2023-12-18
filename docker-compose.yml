@@ -27,6 +27,8 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_HOST=${POSTGRES_HOST}
       - DB_PORT=${POSTGRES_PORT_DOCKER}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
     ports:
       - ${BACKEND_PORT_LOCAL}:${BACKEND_PORT_DOCKER}
     volumes:

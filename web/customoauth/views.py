@@ -9,6 +9,7 @@ from authuser.models import User
 from django.http import HttpResponseBadRequest
 from friend.models import FriendList
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 
 class YourOAuthView(View):
@@ -43,15 +44,13 @@ class OAuthCallbackView(View):
     def exchange_code_for_access_token(self, code):
         # Customize this method based on your OAuth2 provider's specifications
         token_url = "https://api.intra.42.fr/oauth/token"
-        client_id = "u-s4t2ud-f81ae818459e61942c018dc4a81daa38227753acade2e384dfce29a493bb76ba"
-        client_secret = "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"
         redirect_uri = "http://0.0.0.0:8000/oauth/callback"
 
         data = {
             'grant_type': 'authorization_code',
             'code': code,
-            'client_id': client_id,
-            'client_secret': client_secret,
+            'client_id': settings.CLIENT_ID,
+            'client_secret': settings.CLIENT_SECRET,
             'redirect_uri': redirect_uri,
         }
 
