@@ -2,6 +2,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import GameRoom
 from authuser.models import User
+import secrets
+import string
+
+
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits + "_"
+    random_string = ''.join(secrets.choice(characters) for _ in range(length))
+    return random_string
 
 
 @login_required
@@ -12,7 +20,7 @@ def remote_room(request, other_user):
     elif GameRoom.objects.filter(user2=request.user, user1=other_user_obj).first():
         room_obj = GameRoom.objects.filter(user2=request.user, user1=other_user_obj).first()
     else:
-        room_obj = GameRoom(user1=request.user, user2=other_user_obj, name=f"{request.user.username}_{other_user}")
+        room_obj = GameRoom(user1=request.user, user2=other_user_obj, name=generate_random_string(9))
         room_obj.save()
     return render(request, "game/game.html", {
         "room_name": room_obj.name,
