@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0', "localhost", ]
 INSTALLED_APPS = [
     # asgi daphne
     'daphne',
+    'authuser',
     # Default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     # User defined apps
-    'authuser',
     'pages',
     'friend',
     'chat',
