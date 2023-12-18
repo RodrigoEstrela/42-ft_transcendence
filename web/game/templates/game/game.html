@@ -31,16 +31,24 @@
             // };
             gameSocket.onmessage = function(event) {
                 const receivedData = JSON.parse(event.data);
-                renderGameFrame(receivedData);
+                {#console.log(receivedData)#}
+                if (receivedData['type'] === 'game_message')
+                    renderGameFrame(receivedData);
+                else if (receivedData['type'] === 'start_message')
+                    send_start_signal();
             };
+
+            const send_start_signal = () => {
+                gameSocket.send('start_loop')
+            }
 
             const renderGameFrame = (gameData) => {
                 if (context && canvas) {
                     clearCanvas();
                     drawField();
                     EstamosNaChampions(gameData.score);
-                    drawPaddle(0, gameData.player0, 10, 110);
-                    drawPaddle(1, gameData.player1, 10, 110);
+                    drawPaddle(0, gameData.player0, 10, 190);
+                    drawPaddle(1, gameData.player1, 10, 190);
                     drawBall(gameData.ballX, gameData.ballY, gameData.ballSpeedX ,gameData.ballSpeedY, gameData.ball_speed);
                 }
             };
@@ -51,19 +59,48 @@
                 }
             };
 
+            function hexToRgb(hex) {
+                // Remove the hash if it exists
+                hex = hex.replace(/^#/, '');
+
+                // Parse the hex values to separate R, G, B components
+                const bigint = parseInt(hex, 16);
+                const r = (bigint >> 16) & 255;
+                const g = (bigint >> 8) & 255;
+                const b = bigint & 255;
+
+                // Return the RGB values as an object
+                return { r, g, b };
+            }
+
             const drawBall = (x, y, speedX, speedY, ballSpeed) => {
                 if (context) {
+                    // Define a color gradient based on speed
+                    const colorGradient = [
+                        { speed: 10, color: '#ffff00' },
+                        { speed: 13, color: '#ff4d00' },
+                        { speed: 16, color: '#ff0000' },
+                        { speed: 20, color: '#0000ff' },
+                        { speed: 50, color: '#bf00ff' },
+                    ];
+
+                    // Find the color corresponding to the ball's speed in the gradient
+                    let ballColor = 'white';  // Default color
+                    for (const { speed, color } of colorGradient) {
+                        if (ballSpeed <= speed) {
+                            ballColor = color;
+                            break;
+                        }
+                    }
 
                     // Display the magnitude of the speed
-                    context.fillStyle = 'white';
-                    context.font = '14pxz Arial';
-                    // context.fillText(`Speed: ${ballSpeed.toFixed(2)}`, 50, 50);
-                    let show_speed = "Speed: " + ballSpeed.toFixed(3);
+                    context.fillStyle = ballColor;
+                    context.font = '14px Arial';
+                    let show_speed = `Speed: ${ballSpeed.toFixed(3)}`;
                     context.fillText(show_speed, x - 30, y - 30);
 
-
                     // Draw the main ball
-                    context.fillStyle = 'yellow';
+                    context.fillStyle = ballColor;
                     context.beginPath();
                     context.arc(x, y, 10, 0, Math.PI * 2);
                     context.fill();
@@ -77,7 +114,9 @@
                         const trailOpacity = 1 - (i / trailCount);
                         const trailRadius = i * trailSpacing;
 
-                        context.fillStyle = `rgba(255, 255, 0, ${trailOpacity})`;  // Yellow color with variable opacity
+
+                        const rgb = hexToRgb(ballColor)
+                        context.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${trailOpacity})`;// Yellow color with variable opacity
                         context.beginPath();
                         context.arc(x - speedX * trailRadius, y - speedY * trailRadius, 10, 0, Math.PI * 2);
                         context.fill();

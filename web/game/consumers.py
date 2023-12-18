@@ -9,9 +9,21 @@ from django.utils import timezone
 
 class GameConsumer(AsyncWebsocketConsumer):
 
+    connected_clients = {}
+
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"game_{self.room_name}"
+
+        print(self.room_name)
+        if self.room_name in self.connected_clients:
+            print('already has game')
+            self.game_instance = self.connected_clients[self.room_name]
+        else:
+            print('no game')
+            self.connected_clients[self.room_name] = GameInstance()
+            self.game_instance = self.connected_clients[self.room_name]
+
         print('connectedddd!!!!!!!!!!!!!!!!!!')
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
@@ -23,34 +35,49 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
+        # print(self.scope['user'])
         game_event = text_data
         # print(game_event)
         if game_event == 'startgame':
-            # game_loop_task = asyncio.create_task(self.game_loop())
-            await self.start_game()
+            await self.send_start_signal()
         elif game_event == 'stopgame':
             await self.stop_game()
         elif game_event == 'pw':
-            await self.move_p0_up('press')
+            await self.game_instance.move_p0_up('press')
         elif game_event == 'ps':
-            await self.move_p0_down('press')
+            await self.game_instance.move_p0_down('press')
         elif game_event == 'pi':
-            await self.move_p1_up('press')
+            await self.game_instance.move_p1_up('press')
         elif game_event == 'pk':
-            await self.move_p1_down('press')
+            await self.game_instance.move_p1_down('press')
         elif game_event == 'rw':
-            await self.move_p0_up('release')
+            await self.game_instance.move_p0_up('release')
         elif game_event == 'rs':
-            await self.move_p0_down('release')
+            await self.game_instance.move_p0_down('release')
         elif game_event == 'ri':
-            await self.move_p1_up('release')
+            await self.game_instance.move_p1_up('release')
         elif game_event == 'rk':
-            await self.move_p1_down('release')
+            await self.game_instance.move_p1_down('release')
+        elif game_event == 'start_loop':
+            await self.start_game()
 
     async def game_loop(self):
         while game_state == 'running':
-            await self.update_game()
-            await asyncio.sleep(0.015625)  # 0.015625
+            await self.game_instance.update_game()
+            await self.send_game_state_to_clients()
+            await asyncio.sleep(0.015625)
+
+    async def send_start_signal(self):
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "start_message"
+            }
+        )
+
+    async def start_message(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "start_message",
+        }))
 
     async def start_game(self):
         global game_state
@@ -65,12 +92,45 @@ class GameConsumer(AsyncWebsocketConsumer):
         print('STOPPPPPPPPPPP!!!!!!!!!!!!')
         global game_state
         game_state = 'stopped'
-        self.player1Score = 0
-        self.player0Score = 0
-        self.ballHitCounter = 1
-        self.player0 = 200
-        self.player1 = 200
+        # self.player1Score = 0
+        # self.player0Score = 0
+        # self.ballHitCounter = 1
+        # self.player0 = 200
+        # self.player1 = 200
 
+    async def send_game_state_to_clients(self):
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "game_message",
+                "ballX": self.game_instance.ballX,
+                "ballY": self.game_instance.ballY,
+                "ballSpeedX": self.game_instance.ballSpeedX,
+                "ballSpeedY": self.game_instance.ballSpeedY,
+                "score": self.game_instance.score,
+                "player0": self.game_instance.player0,
+                "player1": self.game_instance.player1,
+                "hit": self.game_instance.hit,
+                "ball_speed": self.game_instance.ball_speed
+            }
+        )
+
+    async def game_message(self, event):
+        # This method is called when the group receives a message
+        await self.send(text_data=json.dumps({
+            "type": "game_message",
+            "ballX": event["ballX"],
+            "ballY": event["ballY"],
+            "ballSpeedX": event["ballSpeedX"],
+            "ballSpeedY": event["ballSpeedY"],
+            "score": event["score"],
+            "player0": event["player0"],
+            "player1": event["player1"],
+            "hit": event["hit"],
+            "ball_speed": event["ball_speed"]
+        }))
+
+
+class GameInstance:
     playersReady = 0
     ballSize = 5
     ballX = 50
@@ -83,7 +143,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     player0 = 200
     player1 = 200
     score = "2:4"
-    paddleHeight = 110
+    paddleHeight = 500
     paddleWidth = 15
     player0Score = 0
     player1Score = 0
@@ -139,43 +199,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.player1 = self.canvasHeight - self.paddleHeight
 
         await self.update_ball_position()
-        self.score = str(self.player0Score) + ' : ' + str(self.player1Score)
-        self.ball_speed = math.sqrt(self.ballSpeedX ** 2 + self.ballSpeedY ** 2)
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "game_message",
-                "ballX": self.ballX,
-                "ballY": self.ballY,
-                "ballSpeedX": self.ballSpeedX,
-                "ballSpeedY": self.ballSpeedY,
-                "score": self.score,
-                "player0": self.player0,
-                "player1": self.player1,
-                "hit": self.hit,
-                "ball_speed": self.ball_speed
-            }
-        )
 
-    async def game_message(self, event):
-        # This method is called when the group receives a message
-        await self.send(text_data=json.dumps({
-            "type": "game_message",
-            "ballX": event["ballX"],
-            "ballY": event["ballY"],
-            "ballSpeedX": event["ballSpeedX"],
-            "ballSpeedY": event["ballSpeedY"],
-            "score": event["score"],
-            "player0": event["player0"],
-            "player1": event["player1"],
-            "hit": event["hit"],
-            "ball_speed": event["ball_speed"]
-        }))
+        self.score = str(self.player0Score) + ' : ' + str(self.player1Score)
+
+        self.ball_speed = math.sqrt(self.ballSpeedX ** 2 + self.ballSpeedY ** 2)
 
     async def update_ball_position(self):
         self.ballX += self.ballSpeedX
         self.ballY += self.ballSpeedY
         if self.ballX < 0:
-            print('player1 ' + str(self.player1Score))
             self.player1Score += 1
             print('GOLOOOOOOOOOOOOOOOOOOOO DO DIREITAAAAAAAA!!!!!!')
             self.ballHitCounter = 1
@@ -184,9 +216,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.ballX = 750
             self.ballY = random.uniform(20, 370)
             if self.player1Score == 5:
+                self.player1Score = 0
+                self.player0Score = 0
                 await self.stop_game()
         elif self.ballX + self.ballSize > self.canvasWidth:
-            print('player0 ' + str(self.player0Score))
             self.player0Score += 1
             print('GOLOOOOOOOOOOOOOOOOOOOO DO ESQUERDAAAAAAAA!!!!!!')
             self.ballHitCounter = 1
@@ -195,19 +228,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.ballX = 50
             self.ballY = random.uniform(20, 370)
             if self.player0Score == 5:
+                self.player1Score = 0
+                self.player0Score = 0
                 await self.stop_game()
         elif self.ballY - self.ballSize < 0:
             self.ballY = self.ballSize
             self.ballSpeedY = abs(self.ballSpeedY)
-            # self.ballHitCounter += 1
-            # self.ballSpeedX *= 1 + (1 / self.ball_hit_counter) / 2.5
-            # self.ballSPeedY *= 1 + (1 / self.ball_hit_counter) / 2.5
         elif self.ballY + self.ballSize > self.canvasHeight:
             self.ballY = self.canvasHeight - self.ballSize
             self.ballSpeedY = -abs(self.ballSpeedY)
-            # self.ballHitCounter += 1
-            # self.ballSpeedX *= 1 + (1 / self.ball_hit_counter) / 2.5
-            # self.ballSPeedY *= 1 + (1 / self.ball_hit_counter) / 2.5
         # CHECK COLISION WITH PLAYER 0 PADDLE
         elif self.ballX - self.ballSize < self.paddleWidth and self.ballY > self.player0 and \
                 self.ballY < self.player0 + self.paddleHeight:
