@@ -30,5 +30,5 @@ def remote_room(request, other_user):
 @login_required
 def local_room(request):
     return render(request, "game/game.html", {
-        "room_name": request.user.username,
+        "room_name": generate_random_string(9),
     })

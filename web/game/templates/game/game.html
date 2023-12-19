@@ -26,29 +26,75 @@
             let canvas = document.getElementById('gameCanvas');
             let context = canvas.getContext('2d');
 
-            // gameSocket.onmessage = function(gameData) {
-            //     renderGameFrame(gameData);
-            // };
             gameSocket.onmessage = function(event) {
-                const receivedData = JSON.parse(event.data);
                 {#console.log(receivedData)#}
+                const receivedData = JSON.parse(event.data);
                 if (receivedData['type'] === 'game_message')
                     renderGameFrame(receivedData);
-                else if (receivedData['type'] === 'start_message')
-                    send_start_signal();
+                else if (receivedData['type'] === 'countdown_message') {
+                    {#renderGameFrame(receivedData);#}
+                    renderCountdown(receivedData);
+                }
             };
 
-            const send_start_signal = () => {
-                gameSocket.send('start_loop')
-            }
+            const renderCountdown = (gameData) => {
+                const countdownDuration = 5;
+
+                // Render numbers from countdownDuration to 1
+                for (let i = countdownDuration; i > 0; i--) {
+                    setTimeout(() => {
+                        // Render the game frame with the countdown number
+                        renderGameFrame(gameData);
+                        renderNumber(i);
+                        context.fillStyle = 'black';  // Default fill color
+                        context.strokeStyle = 'black';  // Default stroke color
+                        context.lineWidth = 1;  // Default line width
+                        context.font = '10px sans-serif';  // Default font
+                        context.textAlign = 'start';  // Default text alignment
+                        context.textBaseline = 'alphabetic';  // Default text baseline
+                    }, (countdownDuration - i) * 1000);
+                }
+
+                // Render "GO!" after the countdown
+                setTimeout(() => {
+                    renderGameFrame(gameData);
+                    renderGo();
+                    context.fillStyle = 'black';  // Default fill color
+                    context.strokeStyle = 'black';  // Default stroke color
+                    context.lineWidth = 1;  // Default line width
+                    context.font = '10px sans-serif';  // Default font
+                    context.textAlign = 'start';  // Default text alignment
+                    context.textBaseline = 'alphabetic';  // Default text baseline
+                }, countdownDuration * 1000);
+            };
+
+            const renderNumber = (number) => {
+                context.fillStyle = '#ffffff'; // Change the background color of the rectangle
+                context.fillRect(canvas.width / 2.65, canvas.height / 2.8, canvas.width / 4, canvas.height / 4); // Draw a slightly smaller rectangle
+                context.fillStyle = '#0a4602'; // Change the text color
+                context.font = 'bold 96px Arial';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillText(number, canvas.width / 2, canvas.height / 2);
+            };
+
+            const renderGo = () => {
+                context.fillStyle = '#ffffff'; // Change the background color of the rectangle
+                context.fillRect(canvas.width / 2.65, canvas.height / 2.8, canvas.width / 4, canvas.height / 4);
+                context.fillStyle = '#0a4602'; // Change the text color
+                context.font = 'bold 96px Arial';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillText('GO!', canvas.width / 2, canvas.height / 2);
+            };
 
             const renderGameFrame = (gameData) => {
                 if (context && canvas) {
                     clearCanvas();
                     drawField();
                     EstamosNaChampions(gameData.score);
-                    drawPaddle(0, gameData.player0, 10, 190);
-                    drawPaddle(1, gameData.player1, 10, 190);
+                    drawPaddle(0, gameData.player0, 10, 110);
+                    drawPaddle(1, gameData.player1, 10, 110);
                     drawBall(gameData.ballX, gameData.ballY, gameData.ballSpeedX ,gameData.ballSpeedY, gameData.ball_speed);
                 }
             };
@@ -77,10 +123,10 @@
                 if (context) {
                     // Define a color gradient based on speed
                     const colorGradient = [
-                        { speed: 10, color: '#ffff00' },
-                        { speed: 13, color: '#ff4d00' },
-                        { speed: 16, color: '#ff0000' },
-                        { speed: 20, color: '#0000ff' },
+                        { speed: 7, color: '#ffff00' },
+                        { speed: 10, color: '#ff4d00' },
+                        { speed: 13, color: '#ff0000' },
+                        { speed: 18, color: '#0000ff' },
                         { speed: 50, color: '#bf00ff' },
                     ];
 
@@ -140,21 +186,21 @@
 
             const drawField = () => {
                 if (context) {
-                    context.fillStyle = 'white'
-                    context.fillRect(395, 0, 5, 400);
+                    context.fillStyle = '#ffffff'
+                    context.fillRect(398, 0, 4, 400);
                 }
             };
 
             const EstamosNaChampions = (score) => {
                 if (context) {
                     context.fillStyle = 'white'
-                    context.fillRect(280, 5, 240, 50);
-                    context.fillRect(360, 40, 60, 30);
+                    context.fillRect(285, 5, 240, 50);
+                    context.fillRect(370, 40, 60, 30);
                     context.fillStyle = 'black';
                     context.font = "20px 'Sports World', sans-serif";
-                    context.fillText("FINAL DA CHAMPIONS", 290, 40);
+                    context.fillText("FINAL DA CHAMPIONS!", 295, 40);
                     context.font = "16px 'Sports World', sans-serif";
-                    context.fillText(score, 370, 65);
+                    context.fillText(score, 384, 65);
                 }
             };
 
@@ -194,7 +240,7 @@
             const startGame = () => {
                 // Emit 'startgame' event when the button is clicked
                 if (gameSocket) {
-                    gameSocket.send('stopgame');
+                    {#gameSocket.send('stopgame');#}
                     // const currentURL = window.location.href;
                     // const urlParts = currentURL.split('/');
                     // const gameId = urlParts[urlParts.length - 2] + "/" + urlParts[urlParts.length - 1];
