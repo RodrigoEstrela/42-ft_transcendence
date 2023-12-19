@@ -6,11 +6,11 @@
 </head>
 <body>
     <!-- edit_profile.html -->
-    <form method="post" action="{% url 'authuser:edit_profile' %}">
+    <form method="post" action="{% url 'authuser:edit_profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+        {{ image_form.as_p }}
         <button type="submit">Save changes</button>
     </form>
-
 </body>
 </html>

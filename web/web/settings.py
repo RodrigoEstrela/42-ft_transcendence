@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ['0.0.0.0', "localhost", ]
 INSTALLED_APPS = [
     # asgi daphne
     'daphne',
-    'authuser',
     # Default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     # User defined apps
+    'authuser',
     'pages',
     'friend',
     'chat',
@@ -137,6 +137,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+    )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

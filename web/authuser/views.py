@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm, AvatarChangeForm
 from friend.models import FriendList, FriendRequest
 from django.conf import settings
 from .models import User
@@ -75,11 +75,14 @@ def profile(request, username):
 @login_required
 def edit_profile(request):
     if request.method == "POST":
-        form = CustomUserChangeForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
+        info_form = CustomUserChangeForm(request.POST, instance=request.user)
+        avatar_form = AvatarChangeForm(request.POST, request.FILES, instance=request.user)
+        if info_form.is_valid() and avatar_form.is_valid():
+            info_form.save()
+            avatar_form.save()
             return redirect('authuser:profile', username=request.user.username)
     else:
-        form = CustomUserChangeForm(instance=request.user)
+        info_form = CustomUserChangeForm(instance=request.user)
+        avatar_form = AvatarChangeForm(instance=request.user)
 
-    return render(request, "authuser/edit_profile.html", {"form": form})
+    return render(request, "authuser/edit_profile.html", {"form": info_form, "image_form": avatar_form})

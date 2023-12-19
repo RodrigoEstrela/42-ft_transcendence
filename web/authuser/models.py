@@ -32,6 +32,7 @@ class User(AbstractUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
     tournament_name = models.CharField(max_length=255, blank=True, default="")
+    avatar = models.ImageField(null=True, blank=True, upload_to="avatars/", default="avatars/default_avatar.jpg")
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -63,6 +64,7 @@ class User(AbstractUser, PermissionsMixin):
 
     def get_profile_page_info(self):
         return {
+            "avatar": self.avatar if self.avatar else "/media/avatars/default_avatar.jpg",
             "username": self.username,
             "email": self.email,
             "tournament_name": self.tournament_name,
