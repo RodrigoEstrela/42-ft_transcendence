@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GameRoom
+from .models import GameRoom, GameHistory
 
 
 class GameRoomAdmin(admin.ModelAdmin):
@@ -10,3 +10,13 @@ class GameRoomAdmin(admin.ModelAdmin):
 
 
 admin.site.register(GameRoom, GameRoomAdmin)
+
+
+class GameHistoryAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'type', 'winner', 'loser', 'final_score', )  # Customize the fields displayed in the list view
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.type} - {self.winner} - {self.loser} - {self.final_score}"  # Customize the display of each object
+
+
+admin.site.register(GameHistory, GameHistoryAdmin)

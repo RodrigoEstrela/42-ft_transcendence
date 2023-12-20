@@ -10,3 +10,12 @@ class GameRoom(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class GameHistory(models.Model):
+    timestamp = models.DateTimeField(auto_now=True, unique_for_date=True)
+    type = models.CharField(max_length=50)
+    winner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="gamehistory_winner", null=True)
+    loser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="gamehistory_user", null=True)
+    final_score = models.CharField(max_length=50)
+    game_tag = models.CharField(max_length=50, null=True)

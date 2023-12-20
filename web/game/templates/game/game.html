@@ -16,24 +16,33 @@
     </div>
     <!-- Include the JavaScript code -->
     {{ room_name|json_script:"room_name" }}
+    {{ user1|json_script:"user1" }}
+    {{ user2|json_script:"user2" }}
+    {{ sender|json_script:"sender" }}
+    {{ player0|json_script:"player0" }}
+    {{ player1|json_script:"player1" }}
     <script>
             const gameId = JSON.parse(document.getElementById('room_name').textContent);
             // const currentURL = window.location.href;
             // const urlParts = currentURL.split('/');
             //
             // const gameId = urlParts[3];
-            const gameSocket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameId + '/');
+            const user1 = JSON.parse(document.getElementById('user1').textContent);
+            const user2 = JSON.parse(document.getElementById('user2').textContent);
+            const gameSocket = new WebSocket('ws://' + window.location.host + '/ws/game/' + gameId + '/' + user1 + '/' + user2 + '/');
             let canvas = document.getElementById('gameCanvas');
             let context = canvas.getContext('2d');
 
             gameSocket.onmessage = function(event) {
-                {#console.log(receivedData)#}
                 const receivedData = JSON.parse(event.data);
-                if (receivedData['type'] === 'game_message')
+                if (receivedData['type'] === 'game_message') {
                     renderGameFrame(receivedData);
+                }
                 else if (receivedData['type'] === 'countdown_message') {
-                    {#renderGameFrame(receivedData);#}
                     renderCountdown(receivedData);
+                }
+                else if (receivedData['type'] === 'ending_message') {
+                    window.location.href = 'http://' + window.location.host + '/game/ending/?gameinfo=' + receivedData['score'] + '&gametag=' + receivedData['game_tag'] + '&roomname=' + gameId;
                 }
             };
 
@@ -92,6 +101,7 @@
                 if (context && canvas) {
                     clearCanvas();
                     drawField();
+                    gameData.score = JSON.parse(document.getElementById('player0').textContent) + "    " + gameData.score + "    " + JSON.parse(document.getElementById('player1').textContent);
                     EstamosNaChampions(gameData.score);
                     drawPaddle(0, gameData.player0, 10, 110);
                     drawPaddle(1, gameData.player1, 10, 110);
@@ -194,58 +204,55 @@
             const EstamosNaChampions = (score) => {
                 if (context) {
                     context.fillStyle = 'white'
-                    context.fillRect(285, 5, 240, 50);
-                    context.fillRect(370, 40, 60, 30);
+                    context.fillRect(285, 5, 240, 70);
                     context.fillStyle = 'black';
                     context.font = "20px 'Sports World', sans-serif";
                     context.fillText("FINAL DA CHAMPIONS!", 295, 40);
                     context.font = "16px 'Sports World', sans-serif";
-                    context.fillText(score, 384, 65);
+                    {#context.fillText(score, 384, 65);#}
+                    context.fillText(score, 300, 65);
                 }
             };
 
             const handleKeyDown = (event) => {
                 // console.log(event.key)
+                const user = JSON.parse(document.getElementById('sender').textContent)
+                {#console.log(user);#}
                 if (event.key === "w") {
                     // Handle Player 0 UP key press
-                    gameSocket.send("pw");
+                    gameSocket.send("pw" + user);
                 } else if (event.key === "s") {
                     // Handle Player 0 DOWN key press
-                    gameSocket.send("ps");
+                    gameSocket.send("ps" + user);
                 } else if (event.key === "i") {
                     // Handle Player 1 UP key press
-                    gameSocket.send("pi");
+                    gameSocket.send("pi" + user);
                 } else if (event.key === "k") {
                     // Handle Player 1 DOWN key press
-                    gameSocket.send("pk");
+                    gameSocket.send("pk" + user);
                 }
             };
 
             const handleKeyUp = (event) => {
+                const user = JSON.parse(document.getElementById('sender').textContent)
+                {#console.log(user);#}
                 if (event.key === "w") {
                     // Handle Player 0 UP key press
-                    gameSocket.send("rw");
+                    gameSocket.send("rw" + user);
                 } else if (event.key === "s") {
                     // Handle Player 0 DOWN key press
-                    gameSocket.send("rs");
+                    gameSocket.send("rs" + user);
                 } else if (event.key === "i") {
                     // Handle Player 1 UP key press
-                    gameSocket.send("ri");
+                    gameSocket.send("ri" + user);
                 } else if (event.key === "k") {
                     // Handle Player 1 DOWN key press
-                    gameSocket.send("rk");
+                    gameSocket.send("rk" + user);
                 }
             };
 
             const startGame = () => {
-                // Emit 'startgame' event when the button is clicked
-                if (gameSocket) {
-                    {#gameSocket.send('stopgame');#}
-                    // const currentURL = window.location.href;
-                    // const urlParts = currentURL.split('/');
-                    // const gameId = urlParts[urlParts.length - 2] + "/" + urlParts[urlParts.length - 1];
-                    gameSocket.send('startgame');
-                }
+                gameSocket.send('startgame');
             };
 
             const stopGame = () => {
@@ -261,9 +268,6 @@
             const stopButton = document.getElementById("stopGame");
             startButton.addEventListener("click", startGame);
             stopButton.addEventListener("click", stopGame);
-
-
-
     </script>
 </body>
 <a href="{%  url 'authuser:home' %}">

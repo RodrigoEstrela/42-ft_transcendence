@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-7l5pcjp0sp&u649az*+7x1see4f4gt=rh%8+cfh=-)%qob$=h-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', "localhost", ]
+ALLOWED_HOSTS = ["0.0.0.0"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'game',
     # oauth2
     'customoauth',
+    # sslserver
+    # 'sslserver',
 ]
 
 AUTHENTICATION_BACKENDS = [
