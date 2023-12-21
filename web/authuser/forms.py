@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .models import User
 from friend.models import FriendList
+from game.models import GameStats
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -20,6 +21,9 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
             FriendList.objects.create(user=user)
             user.friends_list = FriendList.objects.get(user=user)
+            user.save()
+            GameStats.objects.create(user=user)
+            user.game_stats = GameStats.objects.get(user=user)
             user.save()
         return user
 

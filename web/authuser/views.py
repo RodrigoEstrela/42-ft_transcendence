@@ -8,6 +8,7 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm, AvatarChangeFor
 from friend.models import FriendList, FriendRequest
 from django.conf import settings
 from .models import User
+from game.models import GameStats
 
 
 def register(request):
@@ -61,6 +62,8 @@ def profile(request, username):
                       {
                           "current_user": request.user.get_short_name(),
                           "info": User.objects.get(username=username).get_profile_page_info(),
+                          "stats": GameStats.objects.get(user=request.user).get_game_stats(),
+                          "game_history": GameStats.objects.get(user=request.user).get_game_history(),
                       })
     return render(request,
                   "authuser/profile.html",
@@ -68,6 +71,8 @@ def profile(request, username):
                       "current_user": request.user.get_short_name(),
                       "target_user": username,
                       "info": User.objects.get(username=username).get_profile_page_info(),
+                      "stats": GameStats.objects.get(user=User.objects.get(username=username)).get_game_stats(),
+                      "game_history": GameStats.objects.get(user=User.objects.get(username=username)).get_game_history(),
                       "name_for_room": request.user.username + ":" + username,
                   })
 

@@ -1,3 +1,5 @@
 data
 .env
 .idea
+web/certs/
+web/media/

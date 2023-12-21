@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, PermissionsMixin, UserManag
 from django.db import models
 from django.utils import timezone
 from friend.models import FriendList
+from game.models import GameStats
 
 
 class CustomUserManager(UserManager):
@@ -42,6 +43,7 @@ class User(AbstractUser, PermissionsMixin):
     last_login = models.DateTimeField(blank=True, null=True)
 
     friends_list = models.OneToOneField(FriendList, on_delete=models.CASCADE, null=True, blank=True, related_name="user_friend_list")
+    game_stats = models.OneToOneField(GameStats, on_delete=models.CASCADE, null=True, blank=True, related_name="user_game_stats")
 
     objects = CustomUserManager()
 

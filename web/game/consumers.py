@@ -96,11 +96,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.game_instance.move_p1_down('release')
 
     async def game_loop(self):
-        # if self.game_state[self.room_name] == 'running':
-        #     await self.print_countdown()
-        #     for i in range(0, 5):
-        #         print(i)
-        #         await asyncio.sleep(1)
+        if self.game_state[self.room_name] == 'running':
+            await self.print_countdown()
+            for i in range(0, 5):
+                print(i)
+                await asyncio.sleep(1)
         while self.game_state[self.room_name] == 'running':
             await self.game_instance.update_game(self.game_state, self.room_name, self.user0_id, self.user1_id)
             await self.send_game_state_to_clients()

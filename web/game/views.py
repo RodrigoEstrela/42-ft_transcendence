@@ -64,6 +64,10 @@ def game_ending(request):
         # Entry does not exist, create a new one
         game_history = GameHistory(type="1v1", winner=winner, loser=loser, final_score=final_score, game_tag=game_tag)
         game_history.save()
+        winner.game_stats.add_game_history(game_history)
+        loser.game_stats.add_game_history(game_history)
+        winner.game_stats.add_win()
+        loser.game_stats.add_loss()
     # Return to game room
     room_obj = GameRoom.objects.filter(name=room_name).first()
     other_user = room_obj.user1.username if room_obj.user1.username != request.user.username else room_obj.user2.username

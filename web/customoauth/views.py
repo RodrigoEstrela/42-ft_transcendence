@@ -10,6 +10,7 @@ from django.http import HttpResponseBadRequest
 from friend.models import FriendList
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from game.models import GameStats
 
 
 class YourOAuthView(View):
@@ -91,6 +92,9 @@ class OAuthCallbackView(View):
 
             FriendList.objects.create(user=user)
             user.friends_list = FriendList.objects.get(user=user)
+            user.save()
+            GameStats.objects.create(user=user)
+            user.game_stats = GameStats.objects.get(user=user)
             user.save()
 
         return user

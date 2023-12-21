@@ -19,6 +19,27 @@
         <li>Last Login: {{ info.last_login }}</li>
         <li>Status: {{ info.status }}</li>
     </ul>
+    <h2>Stats:</h2>
+    <ul>
+        <li>Wins: {{ stats.wins }}</li>
+        <li>Losses: {{ stats.losses }}</li>
+        <li>Games Played: {{ stats.games_played }}</li>
+        <li>Tournaments Won: {{ stats.tournaments_won }}</li>
+        <li>Tournaments Played: {{ stats.tournaments_played }}</li>
+    </ul>
+    <h2>Game History: </h2>
+    <ul>
+        {% for game in game_history %}
+            <li>{{ game }}
+            {% if game.winner.username == target_user %}
+                VICTORY
+            {% else %}
+                DEFEAT
+            {% endif %}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
     <form method="post" action="{% url 'friend:send_friend_request' username=target_user %}">
         {% csrf_token %}
         <button type="submit">Add Friend</button>
